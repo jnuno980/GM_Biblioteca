@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 module.exports = {
   plugins: {
     tailwindcss: {},
@@ -6,3 +7,13 @@ module.exports = {
 }
 
 
+=======
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+
+
+>>>>>>> cdde7e74c145f3a7e1d3f77290ab03c7b8100859
