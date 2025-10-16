@@ -50,7 +50,7 @@ const Requisicoes = () => {
 
   // Return mutation
   const returnMutation = useMutation(
-    (id) => apiService.put(apiEndpoints.requisicoes.return(id), {
+    (id) => requisicoesService.return(id, {
       re_data_devolucao: new Date().toISOString().split('T')[0]
     }),
     {
@@ -66,7 +66,7 @@ const Requisicoes = () => {
 
   // Delete mutation
   const deleteMutation = useMutation(
-    (id) => apiService.delete(apiEndpoints.requisicoes.delete(id)),
+    (id) => requisicoesService.delete(id),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('requisicoes');
@@ -252,8 +252,8 @@ const Requisicoes = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {requisicoes?.data?.length > 0 ? (
-                requisicoes.data.map((req) => (
+              {requisicoes && requisicoes.length > 0 ? (
+                requisicoes.map((req) => (
                   <tr key={req.re_cod}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
                       {req.re_cod}
