@@ -207,6 +207,16 @@ export const livrosService = {
       
       try {
         const result = await supabaseQueries.getAll('livro', {
+          select: `
+            li_cod,
+            li_titulo,
+            li_ano,
+            li_edicao,
+            li_isbn,
+            li_genero,
+            editora:ed_cod(ed_nome),
+            autor:au_cod(au_nome)
+          `,
           order: { column: 'li_titulo', ascending: true }
         });
         console.log('🔍 DEBUG - supabaseQueries result:', result);
