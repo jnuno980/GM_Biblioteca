@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, Edit, Trash2, BookOpen } from 'lucide-react';
 import { livrosService, editorasService, autoresService, generosService } from '../services/api';
 import toast from 'react-hot-toast';
-import SupabaseDebug from '../components/SupabaseDebug';
 
 const Livros = () => {
   const [showForm, setShowForm] = useState(false);
@@ -134,8 +133,6 @@ const Livros = () => {
 
   return (
     <div className="space-y-6">
-      <SupabaseDebug />
-      
       {/* Debug Info for Livros */}
       <div style={{
         backgroundColor: '#f0f9ff',
