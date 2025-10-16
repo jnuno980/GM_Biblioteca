@@ -375,7 +375,14 @@ export const dashboardService = {
           supabase.from('requisicao').select('re_cod')
         ]);
 
-        console.log('🔍 DEBUG - Dashboard results:', {
+        console.log('🔍 DEBUG - Raw Dashboard results:', {
+          livrosResult,
+          exemplaresResult,
+          utentesResult,
+          requisicoesResult
+        });
+
+        console.log('🔍 DEBUG - Dashboard counts:', {
           livros: livrosResult.data?.length || 0,
           exemplares: exemplaresResult.data?.length || 0,
           utentes: utentesResult.data?.length || 0,
