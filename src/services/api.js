@@ -194,9 +194,10 @@ export const livrosService = {
   // Get all livros
   getAll: async () => {
     if (databaseType === 'supabase') {
-      return await supabaseQueries.getAll('livro', {
+      const result = await supabaseQueries.getAll('livro', {
         order: { column: 'li_titulo', ascending: true }
       });
+      return result.data || result; // Return just the data array
     } else {
       const response = await api.get(apiEndpoints.livros.list);
       return response.data.data || response.data;
@@ -248,9 +249,10 @@ export const livrosService = {
 export const editorasService = {
   getAll: async () => {
     if (databaseType === 'supabase') {
-      return await supabaseQueries.getAll('editora', {
+      const result = await supabaseQueries.getAll('editora', {
         order: { column: 'ed_nome', ascending: true }
       });
+      return result.data || result; // Return just the data array
     } else {
       const response = await api.get(apiEndpoints.editoras.list);
       return response.data.data || response.data;
@@ -262,9 +264,10 @@ export const editorasService = {
 export const autoresService = {
   getAll: async () => {
     if (databaseType === 'supabase') {
-      return await supabaseQueries.getAll('autor', {
+      const result = await supabaseQueries.getAll('autor', {
         order: { column: 'au_nome', ascending: true }
       });
+      return result.data || result; // Return just the data array
     } else {
       const response = await api.get(apiEndpoints.autores.list);
       return response.data.data || response.data;
@@ -276,9 +279,10 @@ export const autoresService = {
 export const generosService = {
   getAll: async () => {
     if (databaseType === 'supabase') {
-      return await supabaseQueries.getAll('genero', {
+      const result = await supabaseQueries.getAll('genero', {
         order: { column: 'ge_genero', ascending: true }
       });
+      return result.data || result; // Return just the data array
     } else {
       const response = await api.get(apiEndpoints.generos.list);
       return response.data.data || response.data;
