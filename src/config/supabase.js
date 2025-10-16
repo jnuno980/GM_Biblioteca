@@ -6,17 +6,26 @@ const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 // Validate configuration
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase configuration missing. Please check your environment variables.');
+  console.error('❌ Supabase configuration missing!');
+  console.error('Missing variables:', {
+    REACT_APP_SUPABASE_URL: !supabaseUrl,
+    REACT_APP_SUPABASE_ANON_KEY: !supabaseAnonKey
+  });
+  console.error('Please check your environment variables in Vercel dashboard.');
 }
 
-// Create Supabase client
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false
+// Create Supabase client with fallback
+const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseAnonKey || 'placeholder-key',
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false
+    }
   }
-});
+);
 
 export default supabase;
 
