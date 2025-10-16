@@ -206,39 +206,21 @@ export const livrosService = {
       console.log('🔍 DEBUG - databaseType:', databaseType);
       
       try {
-        // First get all livros with basic data
-        const livrosResult = await supabaseQueries.getAll('livro', {
-          select: 'li_cod, li_titulo, li_ano, li_edicao, li_isbn, li_genero, li_editora, li_autor',
-          order: { column: 'li_titulo', ascending: true }
-        });
+        // Simplified query first to test basic connection
+        const { data, error } = await supabase
+          .from('livro')
+          .select('*')
+          .order('li_titulo', { ascending: true });
         
-        // Then get editoras and autores separately
-        const [editorasResult, autoresResult] = await Promise.all([
-          supabase.from('editora').select('ed_cod, ed_nome'),
-          supabase.from('autor').select('au_cod, au_nome')
-        ]);
+        console.log('🔍 DEBUG - Supabase query result:', { data, error });
         
-        // Create lookup maps
-        const editorasMap = {};
-        const autoresMap = {};
+        if (error) {
+          console.error('🔍 DEBUG - Supabase error:', error);
+          throw error;
+        }
         
-        editorasResult.data?.forEach(editora => {
-          editorasMap[editora.ed_cod] = editora.ed_nome;
-        });
-        
-        autoresResult.data?.forEach(autor => {
-          autoresMap[autor.au_cod] = autor.au_nome;
-        });
-        
-        // Merge data
-        const livrosWithNames = livrosResult.data?.map(livro => ({
-          ...livro,
-          editora_nome: editorasMap[livro.li_editora] || '—',
-          autor_nome: autoresMap[livro.li_autor] || '—'
-        })) || [];
-        
-        console.log('🔍 DEBUG - Livros with names:', livrosWithNames);
-        return livrosWithNames;
+        console.log('🔍 DEBUG - Returning basic livros:', data);
+        return data || [];
       } catch (error) {
         console.error('🔍 DEBUG - Error in livrosService.getAll():', error);
         throw error;
