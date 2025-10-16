@@ -244,4 +244,46 @@ export const livrosService = {
   }
 };
 
+// Editoras service with Supabase support
+export const editorasService = {
+  getAll: async () => {
+    if (databaseType === 'supabase') {
+      return await supabaseQueries.getAll('editora', {
+        order: { column: 'ed_nome', ascending: true }
+      });
+    } else {
+      const response = await api.get(apiEndpoints.editoras.list);
+      return response.data.data || response.data;
+    }
+  }
+};
+
+// Autores service with Supabase support
+export const autoresService = {
+  getAll: async () => {
+    if (databaseType === 'supabase') {
+      return await supabaseQueries.getAll('autor', {
+        order: { column: 'au_nome', ascending: true }
+      });
+    } else {
+      const response = await api.get(apiEndpoints.autores.list);
+      return response.data.data || response.data;
+    }
+  }
+};
+
+// Géneros service with Supabase support
+export const generosService = {
+  getAll: async () => {
+    if (databaseType === 'supabase') {
+      return await supabaseQueries.getAll('genero', {
+        order: { column: 'ge_genero', ascending: true }
+      });
+    } else {
+      const response = await api.get(apiEndpoints.generos.list);
+      return response.data.data || response.data;
+    }
+  }
+};
+
 export default api;

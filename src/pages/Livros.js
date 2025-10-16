@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, Edit, Trash2, BookOpen } from 'lucide-react';
-import { livrosService } from '../services/api';
+import { livrosService, editorasService, autoresService, generosService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const Livros = () => {
@@ -29,17 +29,17 @@ const Livros = () => {
   // Fetch dropdown options
   const { data: editoras } = useQuery(
     'editoras',
-    () => apiService.get(apiEndpoints.editoras.list)
+    () => editorasService.getAll()
   );
 
   const { data: autores } = useQuery(
     'autores',
-    () => apiService.get(apiEndpoints.autores.list)
+    () => autoresService.getAll()
   );
 
   const { data: generos } = useQuery(
     'generos',
-    () => apiService.get(apiEndpoints.generos.list)
+    () => generosService.getAll()
   );
 
   // Create/Update mutation
