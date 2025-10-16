@@ -201,9 +201,11 @@ export const apiService = {
 export const livrosService = {
   // Get all livros
   getAll: async () => {
+    console.log('🔍 DEBUG - livrosService.getAll() ENTRY POINT');
     if (finalDatabaseType === 'supabase') {
       console.log('🔍 DEBUG - livrosService.getAll() called');
       console.log('🔍 DEBUG - databaseType:', databaseType);
+      console.log('🔍 DEBUG - finalDatabaseType:', finalDatabaseType);
       
       try {
         console.log('🔍 DEBUG - Starting livros query...');
