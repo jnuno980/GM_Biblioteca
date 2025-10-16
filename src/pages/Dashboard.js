@@ -23,6 +23,10 @@ const Dashboard = () => {
     }
   );
 
+  // Debug log
+  console.log('🔍 DEBUG - Dashboard stats received:', stats);
+  console.log('🔍 DEBUG - Dashboard stats type:', typeof stats);
+
   // Fetch recent activity
   const { data: recentActivity, isLoading: activityLoading } = useQuery(
     'recent-activity',
