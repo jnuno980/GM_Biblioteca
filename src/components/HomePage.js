@@ -8,7 +8,7 @@ import {
   ArrowRightLeft,
   CheckCircle
 } from 'lucide-react';
-import { apiService, apiEndpoints } from '../services/api';
+import { dashboardService } from '../services/api';
 
 const HomePage = () => {
   const [stats, setStats] = useState(null);
@@ -23,13 +23,9 @@ const HomePage = () => {
     setSuccess(null);
 
     try {
-      const response = await apiService.get(apiEndpoints.dashboard.stats);
-      if (response.success) {
-        setStats(response.data);
-        setSuccess('Estatísticas carregadas com sucesso!');
-      } else {
-        setError(response.error || 'Erro ao carregar estatísticas');
-      }
+      const response = await dashboardService.getStats();
+      setStats(response);
+      setSuccess('Estatísticas carregadas com sucesso!');
     } catch (error) {
       setError('Erro de conexão: ' + error.message);
       console.error('Dashboard error:', error);
