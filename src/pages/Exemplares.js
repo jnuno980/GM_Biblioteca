@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, Trash2, Library, ToggleLeft, ToggleRight } from 'lucide-react';
-import { apiService, apiEndpoints } from '../services/api';
+import { exemplaresService, livrosService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const Exemplares = () => {
@@ -16,13 +16,13 @@ const Exemplares = () => {
   // Fetch exemplares
   const { data: exemplares, isLoading } = useQuery(
     'exemplares',
-    () => apiService.get(apiEndpoints.exemplares.list)
+    () => exemplaresService.getAll()
   );
 
   // Fetch livros
   const { data: livros } = useQuery(
     'livros',
-    () => apiService.get(apiEndpoints.livros.list)
+    () => livrosService.getAll()
   );
 
   // Create mutation
@@ -198,11 +198,11 @@ const Exemplares = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {exemplares?.data?.length > 0 ? (
-                exemplares.data.map((exemplar) => (
+              {exemplares && exemplares.length > 0 ? (
+                exemplares.map((exemplar) => (
                   <tr key={exemplar.lex_cod}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {exemplar.li_titulo}
+                      {exemplar.livro?.li_titulo || '—'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {exemplar.lex_estado}

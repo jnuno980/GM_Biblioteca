@@ -385,4 +385,65 @@ export const dashboardService = {
   }
 };
 
+// Exemplares service with Supabase support
+export const exemplaresService = {
+  getAll: async () => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.getAll('livro_exemplar', {
+        select: `
+          lex_cod,
+          lex_estado,
+          lex_disponivel,
+          livro:lex_li_cod(li_titulo)
+        `,
+        order: { column: 'lex_cod', ascending: true }
+      });
+      return result.data || result;
+    } else {
+      const response = await api.get(apiEndpoints.exemplares.list);
+      return response.data.data || response.data;
+    }
+  }
+};
+
+// Utentes service with Supabase support
+export const utentesService = {
+  getAll: async () => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.getAll('utente', {
+        order: { column: 'ut_nome', ascending: true }
+      });
+      return result.data || result;
+    } else {
+      const response = await api.get(apiEndpoints.utentes.list);
+      return response.data.data || response.data;
+    }
+  }
+};
+
+// Requisições service with Supabase support
+export const requisicoesService = {
+  getAll: async () => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.getAll('requisicao', {
+        select: `
+          re_cod,
+          re_data_requisicao,
+          re_data_devolucao,
+          utente:re_ut_cod(ut_nome),
+          exemplar:re_lex_cod(
+            lex_cod,
+            livro:lex_li_cod(li_titulo)
+          )
+        `,
+        order: { column: 're_data_requisicao', ascending: false }
+      });
+      return result.data || result;
+    } else {
+      const response = await api.get(apiEndpoints.requisicoes.list);
+      return response.data.data || response.data;
+    }
+  }
+};
+
 export default api;
