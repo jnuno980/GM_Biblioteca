@@ -80,6 +80,7 @@ const Dashboard = () => {
           <p className="text-2xl font-bold text-gray-900">
             {statsLoading ? '...' : (value ? value.toLocaleString() : '0')}
           </p>
+          <p className="text-xs text-red-500">DEBUG: {JSON.stringify(stats)}</p>
         </div>
         {link && (
           <Link
