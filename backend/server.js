@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config({ path: './config.env' });
 
-const { testConnection } = require('./config/database');
+const { db } = require('./config/database');
 
 // Import routes
 const livroRoutes = require('./routes/livros');
@@ -93,7 +93,7 @@ app.use((error, req, res, next) => {
 const startServer = async () => {
   try {
     // Test database connection
-    await testConnection();
+    await db.testConnection();
     
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
