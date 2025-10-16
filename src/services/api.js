@@ -243,11 +243,23 @@ export const livrosService = {
         console.log('🔍 DEBUG - Autores map:', autoresMap);
         
         // Merge data
-        const livrosWithNames = livrosResult.data?.map(livro => ({
-          ...livro,
-          editora_nome: editorasMap[livro.li_editora] || '—',
-          autor_nome: autoresMap[livro.li_autor] || '—'
-        })) || [];
+        console.log('🔍 DEBUG - livrosResult.data:', livrosResult.data);
+        console.log('🔍 DEBUG - livrosResult.data type:', typeof livrosResult.data);
+        console.log('🔍 DEBUG - livrosResult.data length:', livrosResult.data?.length);
+        
+        const livrosWithNames = livrosResult.data?.map(livro => {
+          console.log('🔍 DEBUG - Processing livro:', livro);
+          console.log('🔍 DEBUG - livro.li_editora:', livro.li_editora);
+          console.log('🔍 DEBUG - livro.li_autor:', livro.li_autor);
+          console.log('🔍 DEBUG - editorasMap[livro.li_editora]:', editorasMap[livro.li_editora]);
+          console.log('🔍 DEBUG - autoresMap[livro.li_autor]:', autoresMap[livro.li_autor]);
+          
+          return {
+            ...livro,
+            editora_nome: editorasMap[livro.li_editora] || '—',
+            autor_nome: autoresMap[livro.li_autor] || '—'
+          };
+        }) || [];
         
         console.log('🔍 DEBUG - Final livros with names:', livrosWithNames);
         return livrosWithNames;
