@@ -1,8 +1,8 @@
-<<<<<<< HEAD
+
 @echo off
-echo ========================================
+echo 
 echo    Biblioteca GM - React Application
-echo ========================================
+echo 
 echo.
 
 echo Verificando dependencias...
@@ -24,12 +24,10 @@ pause
 
 
 
-
-=======
 @echo off
-echo ========================================
+echo 
 echo    Biblioteca GM - React Application
-echo ========================================
+echo 
 echo.
 
 echo Verificando dependencias...
@@ -51,6 +49,4 @@ pause
 
 
 
-
->>>>>>> cdde7e74c145f3a7e1d3f77290ab03c7b8100859
 

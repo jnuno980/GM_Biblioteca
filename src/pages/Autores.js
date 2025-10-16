@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, Edit, Trash2, User } from 'lucide-react';
@@ -219,8 +219,6 @@ const Autores = () => {
 
 export default Autores;
 
-
-=======
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, Edit, Trash2, User } from 'lucide-react';
@@ -441,5 +439,3 @@ const Autores = () => {
 
 export default Autores;
 
-
->>>>>>> cdde7e74c145f3a7e1d3f77290ab03c7b8100859

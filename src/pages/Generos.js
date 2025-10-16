@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, Trash2, Tag } from 'lucide-react';
@@ -165,8 +165,6 @@ const Generos = () => {
 
 export default Generos;
 
-
-=======
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, Trash2, Tag } from 'lucide-react';
@@ -333,5 +331,3 @@ const Generos = () => {
 
 export default Generos;
 
-
->>>>>>> cdde7e74c145f3a7e1d3f77290ab03c7b8100859

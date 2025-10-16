@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../config/database');
@@ -58,8 +58,6 @@ module.exports = router;
 
 
 
-
-=======
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../config/database');
@@ -118,7 +116,4 @@ module.exports = router;
 
 
 
-
-
->>>>>>> cdde7e74c145f3a7e1d3f77290ab03c7b8100859
 
