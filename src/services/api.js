@@ -326,20 +326,29 @@ export const dashboardService = {
   getStats: async () => {
     if (finalDatabaseType === 'supabase') {
       try {
-        // Get counts from different tables
+        console.log('🔍 DEBUG - dashboardService.getStats() called');
+        
+        // Get all data and count manually
         const [livrosResult, exemplaresResult, utentesResult, requisicoesResult] = await Promise.all([
-          supabase.from('livro').select('li_cod', { count: 'exact' }),
-          supabase.from('livro_exemplar').select('lex_cod', { count: 'exact' }),
-          supabase.from('utente').select('ut_cod', { count: 'exact' }),
-          supabase.from('requisicao').select('re_cod', { count: 'exact' })
+          supabase.from('livro').select('li_cod'),
+          supabase.from('livro_exemplar').select('lex_cod'),
+          supabase.from('utente').select('ut_cod'),
+          supabase.from('requisicao').select('re_cod')
         ]);
 
+        console.log('🔍 DEBUG - Dashboard results:', {
+          livros: livrosResult.data?.length || 0,
+          exemplares: exemplaresResult.data?.length || 0,
+          utentes: utentesResult.data?.length || 0,
+          requisicoes: requisicoesResult.data?.length || 0
+        });
+
         return {
-          totalLivros: livrosResult.count || 0,
-          totalExemplares: exemplaresResult.count || 0,
-          totalUtentes: utentesResult.count || 0,
-          totalRequisicoes: requisicoesResult.count || 0,
-          exemplaresDisponiveis: exemplaresResult.count || 0, // Simplified for now
+          totalLivros: livrosResult.data?.length || 0,
+          totalExemplares: exemplaresResult.data?.length || 0,
+          totalUtentes: utentesResult.data?.length || 0,
+          totalRequisicoes: requisicoesResult.data?.length || 0,
+          exemplaresDisponiveis: exemplaresResult.data?.length || 0, // Simplified for now
           exemplaresEmprestados: 0 // Simplified for now
         };
       } catch (error) {
