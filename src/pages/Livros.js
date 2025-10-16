@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, Edit, Trash2, BookOpen } from 'lucide-react';
 import { livrosService, editorasService, autoresService, generosService } from '../services/api';
 import toast from 'react-hot-toast';
+import SupabaseDebug from '../components/SupabaseDebug';
 
 const Livros = () => {
   const [showForm, setShowForm] = useState(false);
@@ -127,6 +128,7 @@ const Livros = () => {
 
   return (
     <div className="space-y-6">
+      <SupabaseDebug />
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center">
