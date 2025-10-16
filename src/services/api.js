@@ -458,6 +458,36 @@ export const utentesService = {
       const response = await api.get(apiEndpoints.utentes.list);
       return response.data.data || response.data;
     }
+  },
+
+  create: async (data) => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.insert('utente', data);
+      return result.data || result;
+    } else {
+      const response = await api.post(apiEndpoints.utentes.create, data);
+      return response.data.data || response.data;
+    }
+  },
+
+  update: async (id, data) => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.update('utente', data, { ut_cod: id });
+      return result.data || result;
+    } else {
+      const response = await api.put(apiEndpoints.utentes.update(id), data);
+      return response.data.data || response.data;
+    }
+  },
+
+  delete: async (id) => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.delete('utente', { ut_cod: id });
+      return result.data || result;
+    } else {
+      const response = await api.delete(apiEndpoints.utentes.delete(id));
+      return response.data.data || response.data;
+    }
   }
 };
 
@@ -481,6 +511,21 @@ export const requisicoesService = {
       return result.data || result;
     } else {
       const response = await api.get(apiEndpoints.requisicoes.list);
+      return response.data.data || response.data;
+    }
+  }
+};
+
+// Códigos Postais service with Supabase support
+export const codigosPostaisService = {
+  getAll: async () => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.getAll('codigo_postal', {
+        order: { column: 'cod_postal', ascending: true }
+      });
+      return result.data || result;
+    } else {
+      const response = await api.get(apiEndpoints.codigosPostais.list);
       return response.data.data || response.data;
     }
   }

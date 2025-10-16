@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, Edit, Trash2, Users } from 'lucide-react';
-import { apiService, apiEndpoints } from '../services/api';
+import { utentesService, codigosPostaisService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const Utentes = () => {
@@ -22,22 +22,22 @@ const Utentes = () => {
   // Fetch utentes
   const { data: utentes, isLoading } = useQuery(
     'utentes',
-    () => apiService.get(apiEndpoints.utentes.list)
+    () => utentesService.getAll()
   );
 
   // Fetch codigos postais
   const { data: codigosPostais } = useQuery(
     'codigos-postais',
-    () => apiService.get(apiEndpoints.codigosPostais.list)
+    () => codigosPostaisService.getAll()
   );
 
   // Create/Update mutation
   const mutation = useMutation(
     (data) => {
       if (editingUtente) {
-        return apiService.put(apiEndpoints.utentes.update(editingUtente.ut_cod), data);
+        return utentesService.update(editingUtente.ut_cod, data);
       } else {
-        return apiService.post(apiEndpoints.utentes.create, data);
+        return utentesService.create(data);
       }
     },
     {
@@ -54,7 +54,7 @@ const Utentes = () => {
 
   // Delete mutation
   const deleteMutation = useMutation(
-    (id) => apiService.delete(apiEndpoints.utentes.delete(id)),
+    (id) => utentesService.delete(id),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('utentes');
@@ -264,8 +264,8 @@ const Utentes = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {utentes?.data?.length > 0 ? (
-                utentes.data.map((utente) => (
+              {utentes && utentes.length > 0 ? (
+                utentes.map((utente) => (
                   <tr key={utente.ut_cod}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {utente.ut_nome}
