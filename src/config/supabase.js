@@ -16,8 +16,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // Create Supabase client with fallback
 const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
-  supabaseAnonKey || 'placeholder-key',
+  supabaseUrl || 'https://mnvlywpbifenjlegkzom.supabase.co', 
+  supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1udmx5d3BiaWZlbmpsZWdrem9tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzODIwMTEsImV4cCI6MjA3NDk1ODAxMX0.Jw6pcscLRGIavfT_4g1XRMFG_uAopK9CJBtbIwPjcRY',
   {
     auth: {
       autoRefreshToken: true,
