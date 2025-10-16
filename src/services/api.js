@@ -403,6 +403,46 @@ export const exemplaresService = {
       const response = await api.get(apiEndpoints.exemplares.list);
       return response.data.data || response.data;
     }
+  },
+
+  create: async (data) => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.insert('livro_exemplar', data);
+      return result.data || result;
+    } else {
+      const response = await api.post(apiEndpoints.exemplares.create, data);
+      return response.data.data || response.data;
+    }
+  },
+
+  toggle: async (id) => {
+    if (finalDatabaseType === 'supabase') {
+      // Get current state and toggle
+      const { data: current } = await supabase
+        .from('livro_exemplar')
+        .select('lex_disponivel')
+        .eq('lex_cod', id)
+        .single();
+      
+      const result = await supabaseQueries.update('livro_exemplar', 
+        { lex_disponivel: !current.lex_disponivel }, 
+        { lex_cod: id }
+      );
+      return result.data || result;
+    } else {
+      const response = await api.put(apiEndpoints.exemplares.toggle(id));
+      return response.data.data || response.data;
+    }
+  },
+
+  delete: async (id) => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.delete('livro_exemplar', { lex_cod: id });
+      return result.data || result;
+    } else {
+      const response = await api.delete(apiEndpoints.exemplares.delete(id));
+      return response.data.data || response.data;
+    }
   }
 };
 

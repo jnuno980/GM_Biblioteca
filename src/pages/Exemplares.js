@@ -27,7 +27,7 @@ const Exemplares = () => {
 
   // Create mutation
   const createMutation = useMutation(
-    (data) => apiService.post(apiEndpoints.exemplares.create, data),
+    (data) => exemplaresService.create(data),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('exemplares');
@@ -42,7 +42,7 @@ const Exemplares = () => {
 
   // Toggle mutation
   const toggleMutation = useMutation(
-    (id) => apiService.put(apiEndpoints.exemplares.toggle(id)),
+    (id) => exemplaresService.toggle(id),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('exemplares');
@@ -56,7 +56,7 @@ const Exemplares = () => {
 
   // Delete mutation
   const deleteMutation = useMutation(
-    (id) => apiService.delete(apiEndpoints.exemplares.delete(id)),
+    (id) => exemplaresService.delete(id),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('exemplares');
