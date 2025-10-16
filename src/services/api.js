@@ -214,8 +214,8 @@ export const livrosService = {
             li_edicao,
             li_isbn,
             li_genero,
-            editora:ed_cod(ed_nome),
-            autor:au_cod(au_nome)
+            li_editora,
+            li_autor
           `,
           order: { column: 'li_titulo', ascending: true }
         });
