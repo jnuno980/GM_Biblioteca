@@ -115,37 +115,37 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard
           title="Livros"
-          value={stats?.data?.livros}
+          value={stats?.totalLivros}
           icon={BookOpen}
           link="/livros"
         />
         <StatCard
           title="Exemplares"
-          value={stats?.data?.exemplares}
+          value={stats?.totalExemplares}
           icon={Library}
           link="/exemplares"
         />
         <StatCard
           title="Utentes"
-          value={stats?.data?.utentes}
+          value={stats?.totalUtentes}
           icon={Users}
           link="/utentes"
         />
         <StatCard
           title="Requisições"
-          value={stats?.data?.requisicoes}
+          value={stats?.totalRequisicoes}
           icon={FileText}
           link="/requisicoes"
         />
         <StatCard
           title="Empréstimos Ativos"
-          value={stats?.data?.emprestimosAtivos}
+          value={stats?.exemplaresEmprestados}
           icon={ArrowRightLeft}
           color="orange"
         />
         <StatCard
           title="Disponíveis"
-          value={stats?.data?.exemplaresDisponiveis}
+          value={stats?.exemplaresDisponiveis}
           icon={CheckCircle}
           color="green"
         />
@@ -195,8 +195,8 @@ const Dashboard = () => {
               <div className="text-center py-4">
                 <div className="loading-spinner mx-auto"></div>
               </div>
-            ) : recentActivity?.data?.length > 0 ? (
-              recentActivity.data.map((activity) => (
+            ) : recentActivity?.length > 0 ? (
+              recentActivity.map((activity) => (
                 <div key={activity.re_cod} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div>
                     <p className="font-medium text-sm">
