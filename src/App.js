@@ -12,11 +12,13 @@ import Autores from './pages/Autores';
 import Generos from './pages/Generos';
 import CodigosPostais from './pages/CodigosPostais';
 import DebugInfo from './components/DebugInfo';
+import SupabaseTest from './components/SupabaseTest';
 
 function App() {
   return (
     <>
       <DebugInfo />
+      <SupabaseTest />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
