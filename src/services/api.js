@@ -243,11 +243,11 @@ export const livrosService = {
         console.log('🔍 DEBUG - Autores map:', autoresMap);
         
         // Merge data
-        console.log('🔍 DEBUG - livrosResult.data:', livrosResult.data);
-        console.log('🔍 DEBUG - livrosResult.data type:', typeof livrosResult.data);
-        console.log('🔍 DEBUG - livrosResult.data length:', livrosResult.data?.length);
+        console.log('🔍 DEBUG - livrosResult:', livrosResult);
+        console.log('🔍 DEBUG - livrosResult type:', typeof livrosResult);
+        console.log('🔍 DEBUG - livrosResult length:', livrosResult?.length);
         
-        const livrosWithNames = livrosResult.data?.map(livro => {
+        const livrosWithNames = livrosResult?.map(livro => {
           console.log('🔍 DEBUG - Processing livro:', livro);
           console.log('🔍 DEBUG - livro.li_editora:', livro.li_editora);
           console.log('🔍 DEBUG - livro.li_autor:', livro.li_autor);
