@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, FileText, ArrowLeft } from 'lucide-react';
-import { apiService, apiEndpoints } from '../services/api';
+import { requisicoesService, utentesService, exemplaresService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const Requisicoes = () => {
@@ -19,23 +19,23 @@ const Requisicoes = () => {
   // Fetch requisicoes
   const { data: requisicoes, isLoading } = useQuery(
     'requisicoes',
-    () => apiService.get(apiEndpoints.requisicoes.list)
+    () => requisicoesService.getAll()
   );
 
   // Fetch dropdown options
   const { data: utentes } = useQuery(
     'utentes',
-    () => apiService.get(apiEndpoints.utentes.list)
+    () => utentesService.getAll()
   );
 
   const { data: exemplares } = useQuery(
     'exemplares-disponiveis',
-    () => apiService.get(apiEndpoints.exemplares.list)
+    () => exemplaresService.getAll()
   );
 
   // Create mutation
   const createMutation = useMutation(
-    (data) => apiService.post(apiEndpoints.requisicoes.create, data),
+    (data) => requisicoesService.create(data),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('requisicoes');

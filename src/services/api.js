@@ -206,24 +206,39 @@ export const livrosService = {
       console.log('🔍 DEBUG - databaseType:', databaseType);
       
       try {
-        const result = await supabaseQueries.getAll('livro', {
-          select: `
-            li_cod,
-            li_titulo,
-            li_ano,
-            li_edicao,
-            li_isbn,
-            li_genero,
-            li_editora,
-            li_autor
-          `,
+        // First get all livros with basic data
+        const livrosResult = await supabaseQueries.getAll('livro', {
+          select: 'li_cod, li_titulo, li_ano, li_edicao, li_isbn, li_genero, li_editora, li_autor',
           order: { column: 'li_titulo', ascending: true }
         });
-        console.log('🔍 DEBUG - supabaseQueries result:', result);
-        console.log('🔍 DEBUG - result type:', typeof result);
-        console.log('🔍 DEBUG - result.data:', result.data);
-        console.log('🔍 DEBUG - returning:', result.data || result);
-        return result.data || result; // Return just the data array
+        
+        // Then get editoras and autores separately
+        const [editorasResult, autoresResult] = await Promise.all([
+          supabase.from('editora').select('ed_cod, ed_nome'),
+          supabase.from('autor').select('au_cod, au_nome')
+        ]);
+        
+        // Create lookup maps
+        const editorasMap = {};
+        const autoresMap = {};
+        
+        editorasResult.data?.forEach(editora => {
+          editorasMap[editora.ed_cod] = editora.ed_nome;
+        });
+        
+        autoresResult.data?.forEach(autor => {
+          autoresMap[autor.au_cod] = autor.au_nome;
+        });
+        
+        // Merge data
+        const livrosWithNames = livrosResult.data?.map(livro => ({
+          ...livro,
+          editora_nome: editorasMap[livro.li_editora] || '—',
+          autor_nome: autoresMap[livro.li_autor] || '—'
+        })) || [];
+        
+        console.log('🔍 DEBUG - Livros with names:', livrosWithNames);
+        return livrosWithNames;
       } catch (error) {
         console.error('🔍 DEBUG - Error in livrosService.getAll():', error);
         throw error;
@@ -505,21 +520,41 @@ export const requisicoesService = {
   getAll: async () => {
     if (finalDatabaseType === 'supabase') {
       const result = await supabaseQueries.getAll('requisicao', {
-        select: `
-          re_cod,
-          re_data_requisicao,
-          re_data_devolucao,
-          utente:re_ut_cod(ut_nome),
-          exemplar:re_lex_cod(
-            lex_cod,
-            livro:lex_li_cod(li_titulo)
-          )
-        `,
         order: { column: 're_data_requisicao', ascending: false }
       });
       return result.data || result;
     } else {
       const response = await api.get(apiEndpoints.requisicoes.list);
+      return response.data.data || response.data;
+    }
+  },
+
+  create: async (data) => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.insert('requisicao', data);
+      return result.data || result;
+    } else {
+      const response = await api.post(apiEndpoints.requisicoes.create, data);
+      return response.data.data || response.data;
+    }
+  },
+
+  return: async (id, data) => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.update('requisicao', data, { re_cod: id });
+      return result.data || result;
+    } else {
+      const response = await api.put(apiEndpoints.requisicoes.return(id), data);
+      return response.data.data || response.data;
+    }
+  },
+
+  delete: async (id) => {
+    if (finalDatabaseType === 'supabase') {
+      const result = await supabaseQueries.delete('requisicao', { re_cod: id });
+      return result.data || result;
+    } else {
+      const response = await api.delete(apiEndpoints.requisicoes.delete(id));
       return response.data.data || response.data;
     }
   }

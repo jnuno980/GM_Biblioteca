@@ -322,10 +322,10 @@ const Livros = () => {
                       {livro.li_isbn || '—'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {livro.li_editora || '—'}
+                      {livro.editora_nome || '—'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {livro.li_autor || '—'}
+                      {livro.autor_nome || '—'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {livro.li_genero || '—'}
