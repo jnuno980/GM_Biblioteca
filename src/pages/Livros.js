@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { Plus, Edit, Trash2, BookOpen } from 'lucide-react';
-import { apiService, apiEndpoints } from '../services/api';
+import { livrosService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const Livros = () => {
@@ -23,7 +23,7 @@ const Livros = () => {
   // Fetch livros
   const { data: livros, isLoading } = useQuery(
     'livros',
-    () => apiService.get(apiEndpoints.livros.list)
+    () => livrosService.getAll()
   );
 
   // Fetch dropdown options
@@ -46,9 +46,9 @@ const Livros = () => {
   const mutation = useMutation(
     (data) => {
       if (editingLivro) {
-        return apiService.put(apiEndpoints.livros.update(editingLivro.li_cod), data);
+        return livrosService.update(editingLivro.li_cod, data);
       } else {
-        return apiService.post(apiEndpoints.livros.create, data);
+        return livrosService.create(data);
       }
     },
     {
@@ -65,7 +65,7 @@ const Livros = () => {
 
   // Delete mutation
   const deleteMutation = useMutation(
-    (id) => apiService.delete(apiEndpoints.livros.delete(id)),
+    (id) => livrosService.delete(id),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('livros');
@@ -214,7 +214,7 @@ const Livros = () => {
                 className="form-select w-full"
               >
                 <option value="">—</option>
-                {editoras?.data?.map(editora => (
+                {editoras?.map(editora => (
                   <option key={editora.ed_cod} value={editora.ed_cod}>
                     {editora.ed_nome}
                   </option>
@@ -232,7 +232,7 @@ const Livros = () => {
                 className="form-select w-full"
               >
                 <option value="">—</option>
-                {autores?.data?.map(autor => (
+                {autores?.map(autor => (
                   <option key={autor.au_cod} value={autor.au_cod}>
                     {autor.au_nome}
                   </option>
@@ -250,7 +250,7 @@ const Livros = () => {
                 className="form-select w-full"
               >
                 <option value="">—</option>
-                {generos?.data?.map(genero => (
+                {generos?.map(genero => (
                   <option key={genero.ge_genero} value={genero.ge_genero}>
                     {genero.ge_genero}
                   </option>
@@ -308,8 +308,8 @@ const Livros = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {livros?.data?.length > 0 ? (
-                livros.data.map((livro) => (
+              {livros && livros.length > 0 ? (
+                livros.map((livro) => (
                   <tr key={livro.li_cod}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {livro.li_titulo}
