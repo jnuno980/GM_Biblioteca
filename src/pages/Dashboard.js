@@ -10,14 +10,14 @@ import {
   Clock,
   CheckCircle
 } from 'lucide-react';
-import { apiService, apiEndpoints } from '../services/api';
+import { dashboardService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
   // Fetch dashboard statistics
   const { data: stats, isLoading: statsLoading, error: statsError } = useQuery(
     'dashboard-stats',
-    () => apiService.get(apiEndpoints.dashboard.stats),
+    () => dashboardService.getStats(),
     {
       refetchInterval: 30000, // Refetch every 30 seconds
     }
@@ -26,7 +26,7 @@ const Dashboard = () => {
   // Fetch recent activity
   const { data: recentActivity, isLoading: activityLoading } = useQuery(
     'recent-activity',
-    () => apiService.get(apiEndpoints.dashboard.recentActivity)
+    () => dashboardService.getRecentActivity()
   );
 
   // Handle quick return form

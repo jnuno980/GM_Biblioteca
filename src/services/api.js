@@ -320,4 +320,69 @@ export const generosService = {
   }
 };
 
+// Dashboard service with Supabase support
+export const dashboardService = {
+  // Get dashboard statistics
+  getStats: async () => {
+    if (finalDatabaseType === 'supabase') {
+      try {
+        // Get counts from different tables
+        const [livrosResult, exemplaresResult, utentesResult, requisicoesResult] = await Promise.all([
+          supabase.from('livro').select('li_cod', { count: 'exact' }),
+          supabase.from('livro_exemplar').select('lex_cod', { count: 'exact' }),
+          supabase.from('utente').select('ut_cod', { count: 'exact' }),
+          supabase.from('requisicao').select('re_cod', { count: 'exact' })
+        ]);
+
+        return {
+          totalLivros: livrosResult.count || 0,
+          totalExemplares: exemplaresResult.count || 0,
+          totalUtentes: utentesResult.count || 0,
+          totalRequisicoes: requisicoesResult.count || 0,
+          exemplaresDisponiveis: exemplaresResult.count || 0, // Simplified for now
+          exemplaresEmprestados: 0 // Simplified for now
+        };
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        throw error;
+      }
+    } else {
+      const response = await api.get(apiEndpoints.dashboard.stats);
+      return response.data.data || response.data;
+    }
+  },
+
+  // Get recent activity
+  getRecentActivity: async () => {
+    if (finalDatabaseType === 'supabase') {
+      try {
+        // Get recent requisicoes with related data
+        const { data, error } = await supabase
+          .from('requisicao')
+          .select(`
+            re_cod,
+            re_data_requisicao,
+            re_data_devolucao,
+            utente:re_ut_cod(ut_nome),
+            exemplar:re_lex_cod(
+              lex_cod,
+              livro:lex_li_cod(li_titulo)
+            )
+          `)
+          .order('re_data_requisicao', { ascending: false })
+          .limit(5);
+
+        if (error) throw error;
+        return data || [];
+      } catch (error) {
+        console.error('Error fetching recent activity:', error);
+        throw error;
+      }
+    } else {
+      const response = await api.get(apiEndpoints.dashboard.recentActivity);
+      return response.data.data || response.data;
+    }
+  }
+};
+
 export default api;
