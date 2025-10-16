@@ -1,218 +1,156 @@
-const mysql = require('mysql2/promise');
-const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config({ path: '../config.env' });
 
-// Database configuration
-const dbConfig = {
-  host: process.env.DB_HOST || '127.0.0.1',
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'gm_biblioteca',
-  charset: 'utf8mb4',
-  timezone: '+00:00',
-  acquireTimeout: 60000,
-  timeout: 60000,
-  reconnect: true
-};
-
 // Supabase configuration
-const supabaseConfig = {
-  url: process.env.SUPABASE_URL,
-  anonKey: process.env.SUPABASE_ANON_KEY,
-  serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// Validate configuration
+if (!supabaseUrl || !supabaseServiceKey) {
+  throw new Error('Supabase configuration missing: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required');
+}
+
+// Supabase API helper functions using fetch
+const supabaseAPI = {
+  // Make request to Supabase REST API
+  async request(endpoint, options = {}) {
+    const url = `${supabaseUrl}/rest/v1${endpoint}`;
+    
+    const defaultHeaders = {
+      'apikey': supabaseServiceKey,
+      'Authorization': `Bearer ${supabaseServiceKey}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    };
+
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...defaultHeaders,
+        ...options.headers
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Supabase API Error: ${response.status} - ${error}`);
+    }
+
+    // Check if response has content
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    }
+    
+    return null;
+  },
+
+  // Select data from table
+  async select(table, options = {}) {
+    const { select = '*', filters = {}, order = {}, limit, offset } = options;
+    
+    let endpoint = `/${table}?select=${select}`;
+    
+    // Add filters
+    Object.entries(filters).forEach(([column, value]) => {
+      endpoint += `&${column}=eq.${value}`;
+    });
+    
+    // Add ordering
+    if (order.column) {
+      endpoint += `&order=${order.column}`;
+      if (order.ascending !== false) {
+        endpoint += '.asc';
+      } else {
+        endpoint += '.desc';
+      }
+    }
+    
+    // Add pagination
+    if (limit) {
+      endpoint += `&limit=${limit}`;
+      if (offset) {
+        endpoint += `&offset=${offset}`;
+      }
+    }
+    
+    return await this.request(endpoint);
+  },
+
+  // Insert data into table
+  async insert(table, data) {
+    return await this.request(`/${table}`, {
+      method: 'POST',
+      body: JSON.stringify(Array.isArray(data) ? data : [data])
+    });
+  },
+
+  // Update data in table
+  async update(table, data, filters) {
+    let endpoint = `/${table}`;
+    
+    // Add filters to endpoint
+    Object.entries(filters).forEach(([column, value]) => {
+      endpoint += `?${column}=eq.${value}`;
+    });
+    
+    return await this.request(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+
+  // Delete data from table
+  async delete(table, filters) {
+    let endpoint = `/${table}`;
+    
+    // Add filters to endpoint
+    Object.entries(filters).forEach(([column, value]) => {
+      endpoint += `?${column}=eq.${value}`;
+    });
+    
+    return await this.request(endpoint, {
+      method: 'DELETE'
+    });
+  },
+
+  // Count records in table
+  async count(table, filters = {}) {
+    let endpoint = `/${table}?select=count`;
+    
+    // Add filters
+    Object.entries(filters).forEach(([column, value]) => {
+      endpoint += `&${column}=eq.${value}`;
+    });
+    
+    const result = await this.request(endpoint, {
+      headers: {
+        'Prefer': 'count=exact'
+      }
+    });
+    
+    // Extract count from headers
+    return result ? result.length : 0;
+  }
 };
 
-// Database type (mysql or supabase)
-const databaseType = process.env.DATABASE_TYPE || 'mysql';
-
-// MySQL connection pool
-let mysqlPool = null;
-if (databaseType === 'mysql') {
-  mysqlPool = mysql.createPool({
-    ...dbConfig,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-  });
-}
-
-// Supabase client
-let supabaseClient = null;
-if (databaseType === 'supabase') {
-  if (!supabaseConfig.url || !supabaseConfig.serviceRoleKey) {
-    throw new Error('Supabase configuration missing: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required');
+// Test connection
+const testConnection = async () => {
+  try {
+    await supabaseAPI.select('livro', { limit: 1 });
+    console.log('✅ Supabase Database connected successfully');
+    return true;
+  } catch (error) {
+    if (error.message.includes('relation "livro" does not exist')) {
+      console.log('ℹ️  Table "livro" does not exist yet - this is normal for a new setup');
+      console.log('✅ Supabase connection is working');
+      return true;
+    }
+    console.error('❌ Supabase Database connection failed:', error.message);
+    return false;
   }
-  
-  supabaseClient = createClient(
-    supabaseConfig.url,
-    supabaseConfig.serviceRoleKey
-  );
-}
-
-// Database interface
-class Database {
-  constructor() {
-    this.type = databaseType;
-  }
-
-  // Test connection
-  async testConnection() {
-    try {
-      if (this.type === 'mysql') {
-        if (!mysqlPool) {
-          throw new Error('MySQL pool not initialized');
-        }
-        const connection = await mysqlPool.getConnection();
-        console.log('✅ MySQL Database connected successfully');
-        connection.release();
-        return true;
-      } else if (this.type === 'supabase') {
-        if (!supabaseClient) {
-          throw new Error('Supabase client not initialized');
-        }
-        const { data, error } = await supabaseClient
-          .from('livros')
-          .select('count')
-          .limit(1);
-        
-        if (error && error.code !== 'PGRST116') { // PGRST116 = table doesn't exist yet
-          throw error;
-        }
-        console.log('✅ Supabase Database connected successfully');
-        return true;
-      }
-    } catch (error) {
-      console.error(`❌ ${this.type.toUpperCase()} Database connection failed:`, error.message);
-      return false;
-    }
-  }
-
-  // Get the appropriate client/pool
-  getClient() {
-    if (this.type === 'mysql') {
-      return mysqlPool;
-    } else if (this.type === 'supabase') {
-      return supabaseClient;
-    }
-    throw new Error(`Unsupported database type: ${this.type}`);
-  }
-
-  // Get database type
-  getType() {
-    return this.type;
-  }
-
-  // Execute query (MySQL specific)
-  async query(sql, params = []) {
-    if (this.type !== 'mysql') {
-      throw new Error('Query method only available for MySQL');
-    }
-    if (!mysqlPool) {
-      throw new Error('MySQL pool not initialized');
-    }
-    return await mysqlPool.execute(sql, params);
-  }
-
-  // Supabase specific methods
-  async supabaseQuery(table, operation, options = {}) {
-    if (this.type !== 'supabase') {
-      throw new Error('Supabase methods only available for Supabase');
-    }
-    if (!supabaseClient) {
-      throw new Error('Supabase client not initialized');
-    }
-
-    const { select = '*', filters = {}, order = {}, limit, offset } = options;
-    let query = supabaseClient.from(table);
-
-    // Apply select
-    if (select !== '*') {
-      query = query.select(select);
-    }
-
-    // Apply filters
-    Object.entries(filters).forEach(([column, value]) => {
-      if (Array.isArray(value)) {
-        query = query.in(column, value);
-      } else if (typeof value === 'object' && value.operator) {
-        query = query[value.operator](column, value.value);
-      } else {
-        query = query.eq(column, value);
-      }
-    });
-
-    // Apply ordering
-    if (order.column) {
-      query = query.order(order.column, { ascending: order.ascending !== false });
-    }
-
-    // Apply pagination
-    if (limit) {
-      query = query.limit(limit);
-      if (offset) {
-        query = query.range(offset, offset + limit - 1);
-      }
-    }
-
-    return await query;
-  }
-
-  async supabaseInsert(table, data) {
-    if (this.type !== 'supabase') {
-      throw new Error('Supabase methods only available for Supabase');
-    }
-    const { data: result, error } = await supabaseClient
-      .from(table)
-      .insert(data)
-      .select();
-    
-    if (error) throw error;
-    return result;
-  }
-
-  async supabaseUpdate(table, data, filters) {
-    if (this.type !== 'supabase') {
-      throw new Error('Supabase methods only available for Supabase');
-    }
-    let query = supabaseClient.from(table).update(data);
-    
-    // Apply filters
-    Object.entries(filters).forEach(([column, value]) => {
-      query = query.eq(column, value);
-    });
-    
-    const { data: result, error } = await query.select();
-    if (error) throw error;
-    return result;
-  }
-
-  async supabaseDelete(table, filters) {
-    if (this.type !== 'supabase') {
-      throw new Error('Supabase methods only available for Supabase');
-    }
-    let query = supabaseClient.from(table);
-    
-    // Apply filters
-    Object.entries(filters).forEach(([column, value]) => {
-      query = query.eq(column, value);
-    });
-    
-    const { data: result, error } = await query.delete().select();
-    if (error) throw error;
-    return result;
-  }
-}
-
-// Create database instance
-const db = new Database();
+};
 
 module.exports = {
-  db,
-  dbConfig,
-  supabaseConfig,
-  databaseType,
-  // Legacy exports for backward compatibility
-  pool: mysqlPool,
-  testConnection: () => db.testConnection()
+  supabaseAPI,
+  testConnection
 };

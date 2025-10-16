@@ -3,7 +3,6 @@ const { db } = require('./config/database');
 
 async function testSupabaseConnection() {
   console.log('🔄 Testing Supabase connection...');
-  console.log('Database type:', db.getType());
   
   try {
     // Test connection
@@ -13,18 +12,26 @@ async function testSupabaseConnection() {
       console.log('✅ Supabase connection successful!');
       
       // Test a simple query
-      if (db.getType() === 'supabase') {
-        console.log('🔄 Testing basic query...');
-        
-        // Try to query a table (this will work even if table doesn't exist yet)
-        const result = await db.supabaseQuery('livro', 'select', {
-          select: 'count',
-          limit: 1
+      console.log('🔄 Testing basic query...');
+      
+      try {
+        const result = await db.getAll('livro', {
+          select: 'li_cod, li_titulo',
+          limit: 5
         });
         
         console.log('✅ Basic query test successful!');
-        console.log('Query result:', result);
+        console.log('Sample data:', result);
+      } catch (queryError) {
+        if (queryError.code === 'PGRST116') {
+          console.log('ℹ️  Table "livro" doesn\'t exist yet. This is normal for a new setup.');
+          console.log('💡 You can create the table structure in your Supabase dashboard.');
+        } else {
+          throw queryError;
+        }
       }
+      
+      console.log('\n🎉 Supabase is ready to use!');
     } else {
       console.log('❌ Supabase connection failed!');
     }
@@ -35,13 +42,15 @@ async function testSupabaseConnection() {
       console.log('💡 Tip: Check your SUPABASE_SERVICE_ROLE_KEY in config.env');
     } else if (error.message.includes('Invalid URL')) {
       console.log('💡 Tip: Check your SUPABASE_URL in config.env');
+    } else if (error.message.includes('Failed to fetch')) {
+      console.log('💡 Tip: Check your internet connection and Supabase URL');
     }
   }
 }
 
 // Run the test
 testSupabaseConnection().then(() => {
-  console.log('🏁 Test completed');
+  console.log('\n🏁 Test completed');
   process.exit(0);
 }).catch((error) => {
   console.error('💥 Test failed:', error);
