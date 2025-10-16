@@ -27,6 +27,12 @@ const Livros = () => {
     () => livrosService.getAll()
   );
 
+  // Debug: Log what we're getting
+  console.log('🔍 DEBUG - Livros data:', livros);
+  console.log('🔍 DEBUG - Livros type:', typeof livros);
+  console.log('🔍 DEBUG - Livros length:', livros?.length);
+  console.log('🔍 DEBUG - Livros isArray:', Array.isArray(livros));
+
   // Fetch dropdown options
   const { data: editoras } = useQuery(
     'editoras',
@@ -129,6 +135,24 @@ const Livros = () => {
   return (
     <div className="space-y-6">
       <SupabaseDebug />
+      
+      {/* Debug Info for Livros */}
+      <div style={{
+        backgroundColor: '#f0f9ff',
+        border: '1px solid #0ea5e9',
+        borderRadius: '8px',
+        padding: '15px',
+        marginBottom: '20px',
+        fontFamily: 'monospace',
+        fontSize: '12px'
+      }}>
+        <h4 style={{ margin: '0 0 10px 0', color: '#0c4a6e' }}>🔍 Debug Livros na Página:</h4>
+        <p><strong>isLoading:</strong> {isLoading ? 'true' : 'false'}</p>
+        <p><strong>livros type:</strong> {typeof livros}</p>
+        <p><strong>livros length:</strong> {livros?.length || 'undefined'}</p>
+        <p><strong>isArray:</strong> {Array.isArray(livros) ? 'true' : 'false'}</p>
+        <p><strong>livros data:</strong> {JSON.stringify(livros, null, 2)}</p>
+      </div>
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center">
