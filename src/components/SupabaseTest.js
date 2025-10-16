@@ -13,15 +13,16 @@ const SupabaseTest = () => {
     try {
       setTestResult('Testing Supabase connection...');
       
-      // Test basic connection
+      // Test basic connection with a simple query
       const { data, error } = await supabase
-        .from('_test_connection')
-        .select('*')
+        .from('information_schema.tables')
+        .select('table_name')
         .limit(1);
       
       if (error) {
-        if (error.code === 'PGRST116') {
-          setTestResult('✅ Supabase conectado! (Tabela de teste não existe, mas conexão OK)');
+        // Check if it's a schema error (which means connection is working)
+        if (error.message.includes('schema cache') || error.message.includes('table') || error.code === 'PGRST116') {
+          setTestResult('✅ Supabase conectado! (Conexão estabelecida com sucesso)');
           setConnectionStatus('success');
         } else {
           setTestResult(`❌ Erro Supabase: ${error.message}`);

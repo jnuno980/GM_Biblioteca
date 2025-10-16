@@ -11,15 +11,10 @@ import Editoras from './pages/Editoras';
 import Autores from './pages/Autores';
 import Generos from './pages/Generos';
 import CodigosPostais from './pages/CodigosPostais';
-import DebugInfo from './components/DebugInfo';
-import SupabaseTest from './components/SupabaseTest';
 
 function App() {
   return (
-    <>
-      <DebugInfo />
-      <SupabaseTest />
-      <Routes>
+    <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
         <Route path="/livros" element={<Layout><Livros /></Layout>} />
@@ -30,8 +25,7 @@ function App() {
         <Route path="/autores" element={<Layout><Autores /></Layout>} />
         <Route path="/generos" element={<Layout><Generos /></Layout>} />
         <Route path="/codigos-postais" element={<Layout><CodigosPostais /></Layout>} />
-      </Routes>
-    </>
+    </Routes>
   );
 }
 
