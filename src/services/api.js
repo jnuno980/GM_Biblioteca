@@ -194,10 +194,22 @@ export const livrosService = {
   // Get all livros
   getAll: async () => {
     if (databaseType === 'supabase') {
-      const result = await supabaseQueries.getAll('livro', {
-        order: { column: 'li_titulo', ascending: true }
-      });
-      return result.data || result; // Return just the data array
+      console.log('🔍 DEBUG - livrosService.getAll() called');
+      console.log('🔍 DEBUG - databaseType:', databaseType);
+      
+      try {
+        const result = await supabaseQueries.getAll('livro', {
+          order: { column: 'li_titulo', ascending: true }
+        });
+        console.log('🔍 DEBUG - supabaseQueries result:', result);
+        console.log('🔍 DEBUG - result type:', typeof result);
+        console.log('🔍 DEBUG - result.data:', result.data);
+        console.log('🔍 DEBUG - returning:', result.data || result);
+        return result.data || result; // Return just the data array
+      } catch (error) {
+        console.error('🔍 DEBUG - Error in livrosService.getAll():', error);
+        throw error;
+      }
     } else {
       const response = await api.get(apiEndpoints.livros.list);
       return response.data.data || response.data;
