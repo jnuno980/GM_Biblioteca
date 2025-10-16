@@ -4,6 +4,14 @@ import supabase, { getDatabaseType, supabaseQueries } from '../config/supabase';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 const databaseType = getDatabaseType();
 
+// Debug: Log database type
+console.log('🔍 DEBUG - databaseType from getDatabaseType():', databaseType);
+console.log('🔍 DEBUG - REACT_APP_DATABASE_TYPE env var:', process.env.REACT_APP_DATABASE_TYPE);
+
+// Force Supabase for Vercel deployment
+const finalDatabaseType = 'supabase';
+console.log('🔍 DEBUG - Using finalDatabaseType:', finalDatabaseType);
+
 // Create axios instance for API calls
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -134,7 +142,7 @@ export const apiEndpoints = {
 export const apiService = {
   // GET request
   get: async (endpoint) => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       // Handle Supabase direct calls
       const table = endpoint.split('/')[1]; // Extract table name from endpoint
       return await supabaseQueries.getAll(table);
@@ -147,7 +155,7 @@ export const apiService = {
   
   // POST request
   post: async (endpoint, data) => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       // Handle Supabase direct calls
       const table = endpoint.split('/')[1]; // Extract table name from endpoint
       return await supabaseQueries.insert(table, data);
@@ -160,7 +168,7 @@ export const apiService = {
   
   // PUT request
   put: async (endpoint, data) => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       // Handle Supabase direct calls
       const parts = endpoint.split('/');
       const table = parts[1];
@@ -175,7 +183,7 @@ export const apiService = {
   
   // DELETE request
   delete: async (endpoint) => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       // Handle Supabase direct calls
       const parts = endpoint.split('/');
       const table = parts[1];
@@ -193,7 +201,7 @@ export const apiService = {
 export const livrosService = {
   // Get all livros
   getAll: async () => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       console.log('🔍 DEBUG - livrosService.getAll() called');
       console.log('🔍 DEBUG - databaseType:', databaseType);
       
@@ -218,7 +226,7 @@ export const livrosService = {
 
   // Get livro by ID
   getById: async (id) => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       return await supabaseQueries.getById('livro', id);
     } else {
       const response = await api.get(apiEndpoints.livros.get(id));
@@ -228,7 +236,7 @@ export const livrosService = {
 
   // Create new livro
   create: async (data) => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       return await supabaseQueries.insert('livro', data);
     } else {
       const response = await api.post(apiEndpoints.livros.create, data);
@@ -238,7 +246,7 @@ export const livrosService = {
 
   // Update livro
   update: async (id, data) => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       return await supabaseQueries.update('livro', data, { li_cod: id });
     } else {
       const response = await api.put(apiEndpoints.livros.update(id), data);
@@ -248,7 +256,7 @@ export const livrosService = {
 
   // Delete livro
   delete: async (id) => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       return await supabaseQueries.delete('livro', { li_cod: id });
     } else {
       const response = await api.delete(apiEndpoints.livros.delete(id));
@@ -260,7 +268,7 @@ export const livrosService = {
 // Editoras service with Supabase support
 export const editorasService = {
   getAll: async () => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       const result = await supabaseQueries.getAll('editora', {
         order: { column: 'ed_nome', ascending: true }
       });
@@ -275,7 +283,7 @@ export const editorasService = {
 // Autores service with Supabase support
 export const autoresService = {
   getAll: async () => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       const result = await supabaseQueries.getAll('autor', {
         order: { column: 'au_nome', ascending: true }
       });
@@ -290,7 +298,7 @@ export const autoresService = {
 // Géneros service with Supabase support
 export const generosService = {
   getAll: async () => {
-    if (databaseType === 'supabase') {
+    if (finalDatabaseType === 'supabase') {
       const result = await supabaseQueries.getAll('genero', {
         order: { column: 'ge_genero', ascending: true }
       });
