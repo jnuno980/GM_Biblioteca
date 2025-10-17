@@ -468,6 +468,7 @@ export const exemplaresService = {
   getAll: async () => {
     if (finalDatabaseType === 'supabase') {
       try {
+        console.log('🔍 Fetching exemplares with supabaseQueries...');
         const result = await supabaseQueries.getAll('livro_exemplar', {
           select: `
             lex_cod,
@@ -477,6 +478,7 @@ export const exemplaresService = {
           `,
           order: { column: 'lex_cod', ascending: true }
         });
+        console.log('🔍 Exemplares result from supabaseQueries:', result);
         return result || [];
       } catch (error) {
         console.error('Error fetching exemplares:', error);
