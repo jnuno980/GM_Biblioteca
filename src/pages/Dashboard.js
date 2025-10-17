@@ -83,14 +83,12 @@ const Dashboard = () => {
               {displayValue}
             </p>
           </div>
-        {link && (
-          <Link
-            to={link}
-            className="btn btn-outline-primary btn-sm"
-          >
-            Abrir
-          </Link>
-        )}
+        <Link
+          to={link}
+          className="btn btn-outline-primary btn-sm"
+        >
+          Abrir
+        </Link>
       </div>
     </div>
     );
@@ -129,30 +127,35 @@ const Dashboard = () => {
           value={stats?.totalLivros}
           icon={BookOpen}
           link="/livros"
+          showNumber={false}
         />
         <StatCard
           title="Exemplares"
           value={stats?.totalExemplares}
           icon={Library}
           link="/exemplares"
+          showNumber={false}
         />
         <StatCard
           title="Utentes"
           value={stats?.totalUtentes}
           icon={Users}
           link="/utentes"
+          showNumber={false}
         />
         <StatCard
           title="Requisições"
           value={stats?.totalRequisicoes}
           icon={FileText}
           link="/requisicoes"
+          showNumber={false}
         />
         <StatCard
           title="Empréstimos Ativos"
           value={stats?.exemplaresEmprestados}
           icon={ArrowRightLeft}
           color="orange"
+          link="/requisicoes"
           showNumber={true}
         />
         <StatCard
@@ -160,6 +163,7 @@ const Dashboard = () => {
           value={stats?.exemplaresDisponiveis}
           icon={CheckCircle}
           color="green"
+          link="/exemplares"
           showNumber={true}
         />
       </div>
