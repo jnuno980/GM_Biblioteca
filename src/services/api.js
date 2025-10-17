@@ -468,18 +468,19 @@ export const exemplaresService = {
   getAll: async () => {
     if (finalDatabaseType === 'supabase') {
       try {
-        console.log('🔍 Fetching exemplares with supabaseQueries...');
-        const result = await supabaseQueries.getAll('livro_exemplar', {
-          select: `
+        // Use direct Supabase query instead of supabaseQueries helper
+        const { data, error } = await supabase
+          .from('livro_exemplar')
+          .select(`
             lex_cod,
             lex_estado,
             lex_disponivel,
             livro:lex_li_cod(li_titulo)
-          `,
-          order: { column: 'lex_cod', ascending: true }
-        });
-        console.log('🔍 Exemplares result from supabaseQueries:', result);
-        return result || [];
+          `)
+          .order('lex_cod', { ascending: true });
+          
+        if (error) throw error;
+        return data || [];
       } catch (error) {
         console.error('Error fetching exemplares:', error);
         throw error;
@@ -557,10 +558,19 @@ export const exemplaresService = {
 export const utentesService = {
   getAll: async () => {
     if (finalDatabaseType === 'supabase') {
-      const result = await supabaseQueries.getAll('utente', {
-        order: { column: 'ut_nome', ascending: true }
-      });
-      return result.data || result;
+      try {
+        // Use direct Supabase query instead of supabaseQueries helper
+        const { data, error } = await supabase
+          .from('utente')
+          .select('*')
+          .order('ut_nome', { ascending: true });
+          
+        if (error) throw error;
+        return data || [];
+      } catch (error) {
+        console.error('Error fetching utentes:', error);
+        throw error;
+      }
     } else {
       const response = await api.get(apiEndpoints.utentes.list);
       return response.data.data || response.data;
