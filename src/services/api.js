@@ -4,13 +4,8 @@ import supabase, { getDatabaseType, supabaseQueries } from '../config/supabase';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 const databaseType = getDatabaseType();
 
-// Debug: Log database type
-console.log('🔍 DEBUG - databaseType from getDatabaseType():', databaseType);
-console.log('🔍 DEBUG - REACT_APP_DATABASE_TYPE env var:', process.env.REACT_APP_DATABASE_TYPE);
-
 // Force Supabase for Vercel deployment
 const finalDatabaseType = 'supabase';
-console.log('🔍 DEBUG - Using finalDatabaseType:', finalDatabaseType);
 
 // Create axios instance for API calls
 const api = axios.create({
@@ -201,14 +196,8 @@ export const apiService = {
 export const livrosService = {
   // Get all livros
   getAll: async () => {
-    console.log('🔍 DEBUG - livrosService.getAll() ENTRY POINT');
     if (finalDatabaseType === 'supabase') {
-      console.log('🔍 DEBUG - livrosService.getAll() called');
-      console.log('🔍 DEBUG - databaseType:', databaseType);
-      console.log('🔍 DEBUG - finalDatabaseType:', finalDatabaseType);
-      
       try {
-        console.log('🔍 DEBUG - Starting livros query...');
         
         // Get all livros with basic data
         const livrosResult = await supabaseQueries.getAll('livro', {
@@ -216,16 +205,11 @@ export const livrosService = {
           order: { column: 'li_titulo', ascending: true }
         });
         
-        console.log('🔍 DEBUG - Livros result:', livrosResult);
-        
         // Then get editoras and autores separately
         const [editorasResult, autoresResult] = await Promise.all([
           supabase.from('editora').select('ed_cod, ed_nome'),
           supabase.from('autor').select('au_cod, au_nome')
         ]);
-        
-        console.log('🔍 DEBUG - Editoras result:', editorasResult);
-        console.log('🔍 DEBUG - Autores result:', autoresResult);
         
         // Create lookup maps
         const editorasMap = {};
@@ -239,20 +223,9 @@ export const livrosService = {
           autoresMap[autor.au_cod] = autor.au_nome;
         });
         
-        console.log('🔍 DEBUG - Editoras map:', editorasMap);
-        console.log('🔍 DEBUG - Autores map:', autoresMap);
-        
         // Merge data
-        console.log('🔍 DEBUG - livrosResult:', livrosResult);
-        console.log('🔍 DEBUG - livrosResult type:', typeof livrosResult);
-        console.log('🔍 DEBUG - livrosResult length:', livrosResult?.length);
         
         const livrosWithNames = livrosResult?.map(livro => {
-          console.log('🔍 DEBUG - Processing livro:', livro);
-          console.log('🔍 DEBUG - livro.li_editora:', livro.li_editora);
-          console.log('🔍 DEBUG - livro.li_autor:', livro.li_autor);
-          console.log('🔍 DEBUG - editorasMap[livro.li_editora]:', editorasMap[livro.li_editora]);
-          console.log('🔍 DEBUG - autoresMap[livro.li_autor]:', autoresMap[livro.li_autor]);
           
           return {
             ...livro,
@@ -261,10 +234,9 @@ export const livrosService = {
           };
         }) || [];
         
-        console.log('🔍 DEBUG - Final livros with names:', livrosWithNames);
         return livrosWithNames;
       } catch (error) {
-        console.error('🔍 DEBUG - Error in livrosService.getAll():', error);
+        console.error('Error in livrosService.getAll():', error);
         throw error;
       }
     } else {
@@ -365,8 +337,6 @@ export const dashboardService = {
   getStats: async () => {
     if (finalDatabaseType === 'supabase') {
       try {
-        console.log('🔍 DEBUG - dashboardService.getStats() called');
-        
         // Get all data and count manually
         const [livrosResult, exemplaresResult, utentesResult, requisicoesResult] = await Promise.all([
           supabase.from('livro').select('li_cod'),
@@ -375,19 +345,6 @@ export const dashboardService = {
           supabase.from('requisicao').select('re_cod')
         ]);
 
-        console.log('🔍 DEBUG - Raw Dashboard results:', {
-          livrosResult,
-          exemplaresResult,
-          utentesResult,
-          requisicoesResult
-        });
-
-        console.log('🔍 DEBUG - Dashboard counts:', {
-          livros: livrosResult.data?.length || 0,
-          exemplares: exemplaresResult.data?.length || 0,
-          utentes: utentesResult.data?.length || 0,
-          requisicoes: requisicoesResult.data?.length || 0
-        });
 
         // Get exemplares disponíveis e emprestados
         const exemplaresDisponiveisResult = await supabase

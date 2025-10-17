@@ -99,9 +99,6 @@ module.exports = {
 
 
 
-
-const Joi = require('joi');
-
 // Validation schemas
 const livroSchema = Joi.object({
   li_titulo: Joi.string().max(200).required(),
