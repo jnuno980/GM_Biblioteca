@@ -68,18 +68,21 @@ const Dashboard = () => {
     );
   }
 
-  const StatCard = ({ title, value, icon: Icon, link, color = 'blue', showNumber = false }) => (
-    <div className="kpi-card bg-white rounded-lg p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="kpi-label">
-            <Icon className="h-4 w-4 mr-2" />
-            {title}
-          </p>
-          <p className="text-2xl font-bold text-gray-900">
-            {statsLoading ? '...' : (showNumber ? (value ? value.toLocaleString() : '0') : '—')}
-          </p>
-        </div>
+  const StatCard = ({ title, value, icon: Icon, link, color = 'blue', showNumber = false }) => {
+    const displayValue = statsLoading ? '...' : (showNumber ? (value ? value.toLocaleString() : '0') : '—');
+    
+    return (
+      <div className="kpi-card bg-white rounded-lg p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="kpi-label">
+              <Icon className="h-4 w-4 mr-2" />
+              {title}
+            </p>
+            <p className="text-2xl font-bold text-gray-900">
+              {displayValue}
+            </p>
+          </div>
         {link && (
           <Link
             to={link}
@@ -90,7 +93,8 @@ const Dashboard = () => {
         )}
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <div className="space-y-6">
