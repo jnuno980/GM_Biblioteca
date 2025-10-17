@@ -23,13 +23,6 @@ const Dashboard = () => {
     }
   );
 
-  // Debug log
-  console.log('🔍 DEBUG - Dashboard stats received:', stats);
-  console.log('🔍 DEBUG - Dashboard stats type:', typeof stats);
-  console.log('🔍 DEBUG - stats.totalLivros:', stats?.totalLivros);
-  console.log('🔍 DEBUG - stats.totalExemplares:', stats?.totalExemplares);
-  console.log('🔍 DEBUG - stats.totalUtentes:', stats?.totalUtentes);
-  console.log('🔍 DEBUG - stats.totalRequisicoes:', stats?.totalRequisicoes);
 
   // Fetch recent activity
   const { data: recentActivity, isLoading: activityLoading } = useQuery(
@@ -80,7 +73,6 @@ const Dashboard = () => {
           <p className="text-2xl font-bold text-gray-900">
             {statsLoading ? '...' : (value ? value.toLocaleString() : '0')}
           </p>
-          <p className="text-xs text-red-500">DEBUG: {JSON.stringify(stats)}</p>
         </div>
         {link && (
           <Link

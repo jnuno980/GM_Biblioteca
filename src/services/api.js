@@ -389,13 +389,24 @@ export const dashboardService = {
           requisicoes: requisicoesResult.data?.length || 0
         });
 
+        // Get exemplares disponíveis e emprestados
+        const exemplaresDisponiveisResult = await supabase
+          .from('livro_exemplar')
+          .select('lex_cod')
+          .eq('lex_disponivel', true);
+
+        const exemplaresEmprestadosResult = await supabase
+          .from('requisicao')
+          .select('re_cod')
+          .is('re_data_devolucao', null);
+
         return {
           totalLivros: livrosResult.data?.length || 0,
           totalExemplares: exemplaresResult.data?.length || 0,
           totalUtentes: utentesResult.data?.length || 0,
           totalRequisicoes: requisicoesResult.data?.length || 0,
-          exemplaresDisponiveis: exemplaresResult.data?.length || 0, // Simplified for now
-          exemplaresEmprestados: 0 // Simplified for now
+          exemplaresDisponiveis: exemplaresDisponiveisResult.data?.length || 0,
+          exemplaresEmprestados: exemplaresEmprestadosResult.data?.length || 0
         };
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
@@ -425,10 +436,21 @@ export const dashboardService = {
             )
           `)
           .order('re_data_requisicao', { ascending: false })
-          .limit(5);
+          .limit(10);
 
         if (error) throw error;
-        return data || [];
+        
+        // Transform data to match expected format
+        const transformedData = data?.map(item => ({
+          re_cod: item.re_cod,
+          re_data_requisicao: item.re_data_requisicao,
+          re_data_devolucao: item.re_data_devolucao,
+          utente_nome: item.utente?.ut_nome || 'Utente não encontrado',
+          livro_titulo: item.exemplar?.livro?.li_titulo || 'Livro não encontrado',
+          status: item.re_data_devolucao ? 'devolvido' : 'emprestado'
+        })) || [];
+        
+        return transformedData;
       } catch (error) {
         console.error('Error fetching recent activity:', error);
         throw error;
