@@ -68,7 +68,7 @@ const Dashboard = () => {
     );
   }
 
-  const StatCard = ({ title, value, icon: Icon, link, color = 'blue' }) => (
+  const StatCard = ({ title, value, icon: Icon, link, color = 'blue', showNumber = false }) => (
     <div className="kpi-card bg-white rounded-lg p-6 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
@@ -77,7 +77,7 @@ const Dashboard = () => {
             {title}
           </p>
           <p className="text-2xl font-bold text-gray-900">
-            {statsLoading ? '...' : (value ? value.toLocaleString() : '0')}
+            {statsLoading ? '...' : (showNumber ? (value ? value.toLocaleString() : '0') : '—')}
           </p>
         </div>
         {link && (
@@ -149,12 +149,14 @@ const Dashboard = () => {
           value={stats?.exemplaresEmprestados}
           icon={ArrowRightLeft}
           color="orange"
+          showNumber={true}
         />
         <StatCard
           title="Disponíveis"
           value={stats?.exemplaresDisponiveis}
           icon={CheckCircle}
           color="green"
+          showNumber={true}
         />
       </div>
 
