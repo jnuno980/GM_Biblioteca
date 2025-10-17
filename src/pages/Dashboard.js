@@ -69,10 +69,9 @@ const Dashboard = () => {
   }
 
   const StatCard = ({ title, value, icon: Icon, link, color = 'blue', showNumber = false }) => {
-    const displayValue = statsLoading ? '...' : (showNumber ? (value ? value.toLocaleString() : '0') : '—');
-    
-    // Debug log to check values
-    console.log(`StatCard ${title}: showNumber=${showNumber}, value=${value}, displayValue=${displayValue}`);
+    // Force showNumber to be boolean and handle the display logic correctly
+    const shouldShowNumber = Boolean(showNumber);
+    const displayValue = statsLoading ? '...' : (shouldShowNumber ? (value ? value.toLocaleString() : '0') : '—');
     
     return (
       <div className="kpi-card bg-white rounded-lg p-6 shadow-sm">
