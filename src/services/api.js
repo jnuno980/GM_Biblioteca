@@ -248,7 +248,7 @@ export const livrosService = {
   // Get livro by ID
   getById: async (id) => {
     if (finalDatabaseType === 'supabase') {
-      return await supabaseQueries.getById('livro', id);
+      return await supabaseQueries.getById('livro', id, { idColumn: 'li_cod' });
     } else {
       const response = await api.get(apiEndpoints.livros.get(id));
       return response.data.data || response.data;

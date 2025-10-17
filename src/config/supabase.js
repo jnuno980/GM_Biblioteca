@@ -80,11 +80,11 @@ export const supabaseQueries = {
 
   // Get single record by ID
   getById: async (table, id, options = {}) => {
-    const { select = '*' } = options;
+    const { select = '*', idColumn = 'id' } = options;
     const { data, error } = await supabase
       .from(table)
       .select(select)
-      .eq('id', id)
+      .eq(idColumn, id)
       .single();
     
     if (error) throw error;
@@ -125,7 +125,7 @@ export const supabaseQueries = {
       query = query.eq(column, value);
     });
     
-    const { data: result, error } = await query.delete().select();
+    const { data: result, error } = await query.delete();
     if (error) throw error;
     return result;
   }
