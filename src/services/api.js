@@ -278,7 +278,24 @@ export const livrosService = {
   // Delete livro
   delete: async (id) => {
     if (finalDatabaseType === 'supabase') {
-      return await supabaseQueries.delete('livro', { li_cod: id });
+      try {
+        // First delete all exemplares associated with this livro
+        const { error: exemplaresError } = await supabase
+          .from('livro_exemplar')
+          .delete()
+          .eq('lex_li_cod', id);
+
+        if (exemplaresError) {
+          throw exemplaresError;
+        }
+
+        // Then delete the livro
+        const result = await supabaseQueries.delete('livro', { li_cod: id });
+        return result;
+      } catch (error) {
+        console.error('Error deleting livro:', error);
+        throw error;
+      }
     } else {
       const response = await api.delete(apiEndpoints.livros.delete(id));
       return response.data.data || response.data;

@@ -70,10 +70,16 @@ const Livros = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('livros');
-        toast.success('Livro eliminado com sucesso');
+        queryClient.invalidateQueries('exemplares'); // Also refresh exemplares
+        toast.success('Livro e exemplares associados eliminados com sucesso');
       },
       onError: (error) => {
-        toast.error(error.message);
+        console.error('Delete error:', error);
+        if (error.message?.includes('foreign key constraint')) {
+          toast.error('Não é possível eliminar este livro porque tem dados relacionados. Elimine primeiro os exemplares associados.');
+        } else {
+          toast.error(error.message || 'Erro ao eliminar livro');
+        }
       }
     }
   );
@@ -112,7 +118,7 @@ const Livros = () => {
   };
 
   const handleDelete = (id, titulo) => {
-    if (window.confirm(`Tem a certeza que quer eliminar o livro "${titulo}"?`)) {
+    if (window.confirm(`Tem a certeza que quer eliminar o livro "${titulo}"?\n\n⚠️ ATENÇÃO: Esta ação também eliminará todos os exemplares associados a este livro!`)) {
       deleteMutation.mutate(id);
     }
   };
