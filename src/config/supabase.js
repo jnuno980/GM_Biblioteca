@@ -118,14 +118,14 @@ export const supabaseQueries = {
 
   // Delete record
   delete: async (table, filters) => {
-    let query = supabase.from(table);
+    let query = supabase.from(table).delete();
     
     // Apply filters
     Object.entries(filters).forEach(([column, value]) => {
       query = query.eq(column, value);
     });
     
-    const { data: result, error } = await query.delete();
+    const { data: result, error } = await query;
     if (error) throw error;
     return result;
   }
