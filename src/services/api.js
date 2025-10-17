@@ -339,31 +339,32 @@ export const dashboardService = {
       try {
         // Get all data and count manually
         const [livrosResult, exemplaresResult, utentesResult, requisicoesResult] = await Promise.all([
-          supabase.from('livro').select('li_cod'),
-          supabase.from('livro_exemplar').select('lex_cod'),
-          supabase.from('utente').select('ut_cod'),
-          supabase.from('requisicao').select('re_cod')
+          supabase.from('livro').select('*', { count: 'exact', head: true }),
+          supabase.from('livro_exemplar').select('*', { count: 'exact', head: true }),
+          supabase.from('utente').select('*', { count: 'exact', head: true }),
+          supabase.from('requisicao').select('*', { count: 'exact', head: true })
         ]);
+
 
 
         // Get exemplares disponíveis e emprestados
         const exemplaresDisponiveisResult = await supabase
           .from('livro_exemplar')
-          .select('lex_cod')
+          .select('*', { count: 'exact', head: true })
           .eq('lex_disponivel', true);
 
         const exemplaresEmprestadosResult = await supabase
           .from('requisicao')
-          .select('re_cod')
+          .select('*', { count: 'exact', head: true })
           .is('re_data_devolucao', null);
 
         return {
-          totalLivros: livrosResult.data?.length || 0,
-          totalExemplares: exemplaresResult.data?.length || 0,
-          totalUtentes: utentesResult.data?.length || 0,
-          totalRequisicoes: requisicoesResult.data?.length || 0,
-          exemplaresDisponiveis: exemplaresDisponiveisResult.data?.length || 0,
-          exemplaresEmprestados: exemplaresEmprestadosResult.data?.length || 0
+          totalLivros: livrosResult.count || 0,
+          totalExemplares: exemplaresResult.count || 0,
+          totalUtentes: utentesResult.count || 0,
+          totalRequisicoes: requisicoesResult.count || 0,
+          exemplaresDisponiveis: exemplaresDisponiveisResult.count || 0,
+          exemplaresEmprestados: exemplaresEmprestadosResult.count || 0
         };
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
