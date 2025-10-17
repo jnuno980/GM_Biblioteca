@@ -30,7 +30,15 @@ const Requisicoes = () => {
 
   const { data: exemplares } = useQuery(
     'exemplares-disponiveis',
-    () => exemplaresService.getAll()
+    () => exemplaresService.getAll(),
+    {
+      onSuccess: (data) => {
+        console.log('🔍 Exemplares loaded:', data);
+      },
+      onError: (error) => {
+        console.error('❌ Error loading exemplares:', error);
+      }
+    }
   );
 
   // Create mutation
@@ -107,6 +115,10 @@ const Requisicoes = () => {
 
   // Filter available exemplares
   const availableExemplares = exemplares?.filter(ex => ex.lex_disponivel) || [];
+  
+  // Debug logs
+  console.log('🔍 Raw exemplares:', exemplares);
+  console.log('🔍 Available exemplares:', availableExemplares);
 
   if (isLoading) {
     return (
