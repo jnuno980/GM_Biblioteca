@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { Link } from 'react-router-dom';
 import { 
   BookOpen, 
@@ -14,12 +14,18 @@ import { dashboardService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
+  const queryClient = useQueryClient();
+
   // Fetch dashboard statistics
   const { data: stats, isLoading: statsLoading, error: statsError } = useQuery(
     'dashboard-stats',
     () => dashboardService.getStats(),
     {
       refetchInterval: 30000, // Refetch every 30 seconds
+      onSuccess: () => {
+        // Invalidate livros query to ensure consistency
+        queryClient.invalidateQueries('livros');
+      }
     }
   );
 
