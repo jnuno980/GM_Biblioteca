@@ -71,6 +71,9 @@ const Dashboard = () => {
   const StatCard = ({ title, value, icon: Icon, link, color = 'blue', showNumber = false }) => {
     const displayValue = statsLoading ? '...' : (showNumber ? (value ? value.toLocaleString() : '0') : '—');
     
+    // Debug log to check values
+    console.log(`StatCard ${title}: showNumber=${showNumber}, value=${value}, displayValue=${displayValue}`);
+    
     return (
       <div className="kpi-card bg-white rounded-lg p-6 shadow-sm">
         <div className="flex items-center justify-between">
