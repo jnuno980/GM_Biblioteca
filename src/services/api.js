@@ -467,16 +467,21 @@ export const dashboardService = {
 export const exemplaresService = {
   getAll: async () => {
     if (finalDatabaseType === 'supabase') {
-      const result = await supabaseQueries.getAll('livro_exemplar', {
-        select: `
-          lex_cod,
-          lex_estado,
-          lex_disponivel,
-          livro:lex_li_cod(li_titulo)
-        `,
-        order: { column: 'lex_cod', ascending: true }
-      });
-      return result.data || result;
+      try {
+        const result = await supabaseQueries.getAll('livro_exemplar', {
+          select: `
+            lex_cod,
+            lex_estado,
+            lex_disponivel,
+            livro:lex_li_cod(li_titulo)
+          `,
+          order: { column: 'lex_cod', ascending: true }
+        });
+        return result || [];
+      } catch (error) {
+        console.error('Error fetching exemplares:', error);
+        throw error;
+      }
     } else {
       const response = await api.get(apiEndpoints.exemplares.list);
       return response.data.data || response.data;
@@ -485,8 +490,13 @@ export const exemplaresService = {
 
   create: async (data) => {
     if (finalDatabaseType === 'supabase') {
-      const result = await supabaseQueries.insert('livro_exemplar', data);
-      return result.data || result;
+      try {
+        const result = await supabaseQueries.insert('livro_exemplar', data);
+        return result || [];
+      } catch (error) {
+        console.error('Error creating exemplar:', error);
+        throw error;
+      }
     } else {
       const response = await api.post(apiEndpoints.exemplares.create, data);
       return response.data.data || response.data;
@@ -506,7 +516,7 @@ export const exemplaresService = {
         { lex_disponivel: !current.lex_disponivel }, 
         { lex_cod: id }
       );
-      return result.data || result;
+      return result || [];
     } else {
       const response = await api.put(apiEndpoints.exemplares.toggle(id));
       return response.data.data || response.data;
@@ -515,8 +525,25 @@ export const exemplaresService = {
 
   delete: async (id) => {
     if (finalDatabaseType === 'supabase') {
-      const result = await supabaseQueries.delete('livro_exemplar', { lex_cod: id });
-      return result.data || result;
+      try {
+        // First delete all requisicoes associated with this exemplar
+        const { error: requisicoesError } = await supabase
+          .from('requisicao')
+          .delete()
+          .eq('re_lex_cod', id);
+
+        if (requisicoesError) {
+          console.warn('Warning deleting requisicoes for exemplar:', requisicoesError);
+          // Continue even if requisicoes deletion fails
+        }
+
+        // Then delete the exemplar
+        const result = await supabaseQueries.delete('livro_exemplar', { lex_cod: id });
+        return result || [];
+      } catch (error) {
+        console.error('Error deleting exemplar:', error);
+        throw error;
+      }
     } else {
       const response = await api.delete(apiEndpoints.exemplares.delete(id));
       return response.data.data || response.data;
@@ -560,8 +587,13 @@ export const utentesService = {
 
   delete: async (id) => {
     if (finalDatabaseType === 'supabase') {
-      const result = await supabaseQueries.delete('utente', { ut_cod: id });
-      return result.data || result;
+      try {
+        const result = await supabaseQueries.delete('utente', { ut_cod: id });
+        return result || [];
+      } catch (error) {
+        console.error('Error deleting utente:', error);
+        throw error;
+      }
     } else {
       const response = await api.delete(apiEndpoints.utentes.delete(id));
       return response.data.data || response.data;
@@ -605,8 +637,13 @@ export const requisicoesService = {
 
   delete: async (id) => {
     if (finalDatabaseType === 'supabase') {
-      const result = await supabaseQueries.delete('requisicao', { re_cod: id });
-      return result.data || result;
+      try {
+        const result = await supabaseQueries.delete('requisicao', { re_cod: id });
+        return result || [];
+      } catch (error) {
+        console.error('Error deleting requisicao:', error);
+        throw error;
+      }
     } else {
       const response = await api.delete(apiEndpoints.requisicoes.delete(id));
       return response.data.data || response.data;

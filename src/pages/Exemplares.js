@@ -60,10 +60,16 @@ const Exemplares = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('exemplares');
-        toast.success('Exemplar eliminado com sucesso');
+        queryClient.invalidateQueries('requisicoes'); // Also refresh requisicoes
+        toast.success('✅ Exemplar e requisições relacionadas eliminados com sucesso!');
       },
       onError: (error) => {
-        toast.error(error.message);
+        console.error('Delete error:', error);
+        if (error.message?.includes('foreign key constraint')) {
+          toast.error('Não é possível eliminar este exemplar porque tem dados relacionados. Elimine primeiro as requisições associadas.');
+        } else {
+          toast.error(error.message || 'Erro ao eliminar exemplar');
+        }
       }
     }
   );
@@ -86,7 +92,7 @@ const Exemplares = () => {
   };
 
   const handleDelete = (id, titulo) => {
-    if (window.confirm(`Tem a certeza que quer eliminar o exemplar de "${titulo}"?`)) {
+    if (window.confirm(`Tem a certeza que quer eliminar o exemplar de "${titulo}"?\n\n⚠️ ATENÇÃO: Esta ação irá eliminar:\n• Todas as requisições relacionadas a este exemplar\n• O próprio exemplar\n\nEsta ação não pode ser desfeita!`)) {
       deleteMutation.mutate(id);
     }
   };
