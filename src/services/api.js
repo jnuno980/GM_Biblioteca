@@ -588,6 +588,18 @@ export const utentesService = {
   delete: async (id) => {
     if (finalDatabaseType === 'supabase') {
       try {
+        // First delete all requisicoes associated with this utente
+        const { error: requisicoesError } = await supabase
+          .from('requisicao')
+          .delete()
+          .eq('re_ut_cod', id);
+
+        if (requisicoesError) {
+          console.warn('Warning deleting requisicoes for utente:', requisicoesError);
+          // Continue even if requisicoes deletion fails
+        }
+
+        // Then delete the utente
         const result = await supabaseQueries.delete('utente', { ut_cod: id });
         return result || [];
       } catch (error) {

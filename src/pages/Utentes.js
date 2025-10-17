@@ -58,10 +58,16 @@ const Utentes = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('utentes');
-        toast.success('Utente eliminado com sucesso');
+        queryClient.invalidateQueries('requisicoes'); // Also refresh requisicoes
+        toast.success('✅ Utente e requisições relacionadas eliminados com sucesso!');
       },
       onError: (error) => {
-        toast.error(error.message);
+        console.error('Delete error:', error);
+        if (error.message?.includes('foreign key constraint')) {
+          toast.error('Não é possível eliminar este utente porque tem dados relacionados. Elimine primeiro as requisições associadas.');
+        } else {
+          toast.error(error.message || 'Erro ao eliminar utente');
+        }
       }
     }
   );
@@ -98,7 +104,7 @@ const Utentes = () => {
   };
 
   const handleDelete = (id, nome) => {
-    if (window.confirm(`Tem a certeza que quer eliminar o utente "${nome}"?`)) {
+    if (window.confirm(`Tem a certeza que quer eliminar o utente "${nome}"?\n\n⚠️ ATENÇÃO: Esta ação irá eliminar:\n• Todas as requisições relacionadas a este utente\n• O próprio utente\n\nEsta ação não pode ser desfeita!`)) {
       deleteMutation.mutate(id);
     }
   };
