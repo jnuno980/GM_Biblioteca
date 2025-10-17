@@ -106,7 +106,7 @@ const Requisicoes = () => {
   };
 
   // Filter available exemplares
-  const availableExemplares = exemplares?.data?.filter(ex => ex.lex_disponivel) || [];
+  const availableExemplares = exemplares?.filter(ex => ex.lex_disponivel) || [];
 
   if (isLoading) {
     return (
@@ -150,7 +150,7 @@ const Requisicoes = () => {
                 className="form-select w-full"
               >
                 <option value="">—</option>
-                {utentes?.data?.map(utente => (
+                {utentes?.map(utente => (
                   <option key={utente.ut_cod} value={utente.ut_cod}>
                     {utente.ut_nome}
                   </option>

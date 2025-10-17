@@ -617,10 +617,33 @@ export const utentesService = {
 export const requisicoesService = {
   getAll: async () => {
     if (finalDatabaseType === 'supabase') {
-      const result = await supabaseQueries.getAll('requisicao', {
-        order: { column: 're_data_requisicao', ascending: false }
-      });
-      return result.data || result;
+      try {
+        const result = await supabaseQueries.getAll('requisicao', {
+          select: `
+            re_cod,
+            re_data_requisicao,
+            re_data_devolucao,
+            utente:re_ut_cod(ut_nome),
+            exemplar:re_lex_cod(lex_cod, livro:lex_li_cod(li_titulo))
+          `,
+          order: { column: 're_data_requisicao', ascending: false }
+        });
+        
+        // Transform the data to match frontend expectations
+        const transformedData = result?.map(item => ({
+          re_cod: item.re_cod,
+          re_data_requisicao: item.re_data_requisicao,
+          re_data_devolucao: item.re_data_devolucao,
+          utente_nome: item.utente?.ut_nome || 'Utente não encontrado',
+          livro_titulo: item.exemplar?.livro?.li_titulo || 'Livro não encontrado',
+          status: item.re_data_devolucao ? 'devolvido' : 'emprestado'
+        })) || [];
+        
+        return transformedData;
+      } catch (error) {
+        console.error('Error fetching requisicoes:', error);
+        throw error;
+      }
     } else {
       const response = await api.get(apiEndpoints.requisicoes.list);
       return response.data.data || response.data;
