@@ -51,16 +51,24 @@ const Navbar = () => {
             
             {/* Catalog Dropdown */}
             <div className="relative group">
-              <button className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-red-800 hover:text-white transition-colors">
+              <button className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                location.pathname.startsWith('/editoras') || 
+                location.pathname.startsWith('/autores') || 
+                location.pathname.startsWith('/generos') || 
+                location.pathname.startsWith('/codigos-postais')
+                  ? 'bg-red-900 text-white'
+                  : 'text-gray-300 hover:bg-red-800 hover:text-white'
+              }`}>
                 Catálogo
               </button>
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border border-gray-200">
                 <div className="py-1">
                   {catalogItems.map((item) => (
                     <Link
                       key={item.name}
                       to={item.href}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                      onClick={() => setIsOpen(false)}
                     >
                       <item.icon className="h-4 w-4 mr-2" />
                       {item.name}
