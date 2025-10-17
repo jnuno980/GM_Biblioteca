@@ -279,7 +279,32 @@ export const livrosService = {
   delete: async (id) => {
     if (finalDatabaseType === 'supabase') {
       try {
-        // First delete all exemplares associated with this livro
+        // First, get all exemplares associated with this livro
+        const { data: exemplares, error: getExemplaresError } = await supabase
+          .from('livro_exemplar')
+          .select('lex_cod')
+          .eq('lex_li_cod', id);
+
+        if (getExemplaresError) {
+          throw getExemplaresError;
+        }
+
+        // Delete all requisições associated with these exemplares
+        if (exemplares && exemplares.length > 0) {
+          const exemplarIds = exemplares.map(ex => ex.lex_cod);
+          
+          const { error: requisicoesError } = await supabase
+            .from('requisicao')
+            .delete()
+            .in('re_lex_cod', exemplarIds);
+
+          if (requisicoesError) {
+            console.warn('Warning deleting requisicoes:', requisicoesError);
+            // Continue even if requisicoes deletion fails
+          }
+        }
+
+        // Delete all exemplares associated with this livro
         const { error: exemplaresError } = await supabase
           .from('livro_exemplar')
           .delete()
@@ -289,8 +314,9 @@ export const livrosService = {
           throw exemplaresError;
         }
 
-        // Then delete the livro
+        // Finally delete the livro
         const result = await supabaseQueries.delete('livro', { li_cod: id });
+        
         return result;
       } catch (error) {
         console.error('Error deleting livro:', error);

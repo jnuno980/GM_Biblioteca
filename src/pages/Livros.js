@@ -71,7 +71,8 @@ const Livros = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('livros');
         queryClient.invalidateQueries('exemplares'); // Also refresh exemplares
-        toast.success('Livro e exemplares associados eliminados com sucesso');
+        queryClient.invalidateQueries('requisicoes'); // Also refresh requisicoes
+        toast.success('✅ Livro, exemplares e requisições relacionadas eliminados com sucesso!');
       },
       onError: (error) => {
         console.error('Delete error:', error);
@@ -118,7 +119,7 @@ const Livros = () => {
   };
 
   const handleDelete = (id, titulo) => {
-    if (window.confirm(`Tem a certeza que quer eliminar o livro "${titulo}"?\n\n⚠️ ATENÇÃO: Esta ação também eliminará todos os exemplares associados a este livro!`)) {
+    if (window.confirm(`Tem a certeza que quer eliminar o livro "${titulo}"?\n\n⚠️ ATENÇÃO: Esta ação irá eliminar:\n• Todos os exemplares deste livro\n• Todas as requisições relacionadas aos exemplares\n• O próprio livro\n\nEsta ação não pode ser desfeita!`)) {
       deleteMutation.mutate(id);
     }
   };
