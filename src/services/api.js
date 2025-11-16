@@ -757,8 +757,23 @@ export const requisicoesService = {
 
   create: async (data) => {
     if (finalDatabaseType === 'supabase') {
-      const result = await supabaseQueries.insert('requisicao', data);
-      return result.data || result;
+      try {
+        // Criar a requisição
+        const result = await supabaseQueries.insert('requisicao', data);
+        
+        // Marcar o exemplar como indisponível
+        if (data.re_lex_cod) {
+          await supabaseQueries.update('livro_exemplar', 
+            { lex_disponivel: false }, 
+            { lex_cod: data.re_lex_cod }
+          );
+        }
+        
+        return result.data || result;
+      } catch (error) {
+        console.error('Error creating requisicao:', error);
+        throw error;
+      }
     } else {
       const response = await api.post(apiEndpoints.requisicoes.create, data);
       return response.data.data || response.data;
@@ -767,8 +782,35 @@ export const requisicoesService = {
 
   return: async (id, data) => {
     if (finalDatabaseType === 'supabase') {
-      const result = await supabaseQueries.update('requisicao', data, { re_cod: id });
-      return result.data || result;
+      try {
+        // Primeiro, buscar a requisição para obter o código do exemplar
+        const { data: requisicao, error: fetchError } = await supabase
+          .from('requisicao')
+          .select('re_lex_cod')
+          .eq('re_cod', id)
+          .is('re_data_devolucao', null)
+          .single();
+        
+        if (fetchError || !requisicao) {
+          throw new Error('Requisição não encontrada ou já devolvida');
+        }
+        
+        // Atualizar a requisição com a data de devolução
+        const result = await supabaseQueries.update('requisicao', data, { re_cod: id });
+        
+        // Marcar o exemplar como disponível
+        if (requisicao.re_lex_cod) {
+          await supabaseQueries.update('livro_exemplar', 
+            { lex_disponivel: true }, 
+            { lex_cod: requisicao.re_lex_cod }
+          );
+        }
+        
+        return result.data || result;
+      } catch (error) {
+        console.error('Error returning requisicao:', error);
+        throw error;
+      }
     } else {
       const response = await api.put(apiEndpoints.requisicoes.return(id), data);
       return response.data.data || response.data;
@@ -778,7 +820,28 @@ export const requisicoesService = {
   delete: async (id) => {
     if (finalDatabaseType === 'supabase') {
       try {
+        // Primeiro, buscar a requisição para obter o código do exemplar
+        const { data: requisicao, error: fetchError } = await supabase
+          .from('requisicao')
+          .select('re_lex_cod, re_data_devolucao')
+          .eq('re_cod', id)
+          .single();
+        
+        if (fetchError || !requisicao) {
+          throw new Error('Requisição não encontrada');
+        }
+        
+        // Deletar a requisição
         const result = await supabaseQueries.delete('requisicao', { re_cod: id });
+        
+        // Se a requisição ainda não foi devolvida, marcar o exemplar como disponível
+        if (requisicao.re_lex_cod && !requisicao.re_data_devolucao) {
+          await supabaseQueries.update('livro_exemplar', 
+            { lex_disponivel: true }, 
+            { lex_cod: requisicao.re_lex_cod }
+          );
+        }
+        
         return result || [];
       } catch (error) {
         console.error('Error deleting requisicao:', error);

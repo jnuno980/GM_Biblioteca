@@ -39,6 +39,7 @@ const Requisicoes = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('requisicoes');
+        queryClient.invalidateQueries('exemplares-disponiveis');
         toast.success('Requisição criada com sucesso');
         handleCancel();
       },
@@ -56,6 +57,7 @@ const Requisicoes = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('requisicoes');
+        queryClient.invalidateQueries('exemplares-disponiveis');
         toast.success('Devolução registrada com sucesso');
       },
       onError: (error) => {
@@ -70,6 +72,7 @@ const Requisicoes = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('requisicoes');
+        queryClient.invalidateQueries('exemplares-disponiveis');
         toast.success('Requisição eliminada com sucesso');
       },
       onError: (error) => {
